@@ -1,0 +1,122 @@
+<?php
+
+/**
+ * @file
+ * Defines a field formatter for showing availability calendar in a ctools modal.
+ */
+
+/**
+ *  Implements of hook_menu()
+ */
+function rooms_availability_reference_modal_menu() {
+  $items['availability/%ctools_js/%'] = array(
+      'title' => 'Availability',
+      'page arguments' => array(1, 2),
+      'page callback' => 'rooms_availability_reference_modal_form',
+      'access callback' => TRUE,
+      'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function rooms_availability_reference_modal_field_formatter_info() {
+  $ret = array(
+    'rooms_availability_reference_modal' => array(
+      'label'       => t('Availability Calendar Modal Popup'),
+      'description' => t('Displays availability information on a calendar inside a modal popup.'),
+      'field types' => array('rooms_availability_reference'),
+    ),
+  );
+  return $ret;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ *
+ * @todo handle multiple unit calendars
+ * @todo parametrize date range
+ */
+function rooms_availability_reference_modal_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+
+
+  $result = array();
+
+  if ($display['type'] == 'rooms_availability_reference_modal') {
+    // Include the CTools tools that we need.
+    ctools_include('ajax');
+    ctools_include('modal');
+
+    // Add CTools' javascript to the page.
+    ctools_modal_add_js();
+
+    // Build list of unit_ids
+    foreach ($items as $delta => $item) {
+      $unit = rooms_unit_load($item['unit_id']);
+      $unit_ids[] = $unit->unit_id;
+    }
+
+    $name = t('Check Availaibility');
+    $href = 'availability/nojs/' . implode('+', $unit_ids);
+    $alt = t('View this unitʼs availability calendar');
+    $result[] = array(
+      '#type' => 'markup',
+      '#markup' => ctools_modal_text_button($name, $href, $alt),
+    );
+  }
+  return $result;
+}
+
+function rooms_availability_reference_modal_form($js = NULL, $unit_ids = NULL) {
+  if ($unit_ids == NULL) {
+    // You can customize the string below, or use a drupal_goto() to
+    // send the user to a custom error page.
+    return 'No unit id was sent. Error.';
+  }
+  if ($js) {
+    // Required includes for ctools to work:
+    ctools_include('modal');
+    ctools_include('ajax');
+  }
+
+  // Build the availability calendar from the specified unit ids
+  drupal_add_library('rooms_availability', 'rooms_fullcalendar');
+  drupal_add_js(drupal_get_path('module', 'rooms_availability_reference') . '/js/rooms_availability_reference.js');
+
+  $unit_names = array();
+
+  foreach (explode('+', $unit_ids) as $id) {
+    $unit = rooms_unit_load($id);
+    $unit_names[] = $unit->name;
+  }
+
+  // Inject settings in javascript that we will use
+  $js_settings['roomsAvailabilityRef'][] = array(
+    'unitID' => $unit_ids,
+    'style' => ROOMS_AVAILABILITY_GENERIC_STYLE,
+  );
+
+  drupal_add_js($js_settings, 'setting');
+
+  $result[] = array(
+    '#prefix' => '<div class="availability-title">',
+    '#markup' => '<h2>' . implode(', ', $unit_names) . '</h2>',
+    '#suffix' => '</div>',
+  );
+
+  $element[] = array(
+    '#theme' => 'rooms_availability_field_calendar',
+    '#attributes' => array('class' => 'cal'),
+    'calendar' => $result,
+  );
+
+  $title = t('Check Availability');
+  if ($js) {
+    return ctools_modal_render($title, drupal_render($element));
+  }
+  else {
+    return $element;
+  }
+}
