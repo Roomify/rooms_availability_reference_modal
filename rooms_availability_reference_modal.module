@@ -44,7 +44,7 @@ function rooms_availability_reference_modal_field_formatter_view($entity_type, $
 
   $result = array();
 
-  if ($display['type'] == 'rooms_availability_reference_modal') {
+  if ($display['type'] == 'rooms_availability_reference_modal' && !empty($items)) {
     // Include the CTools tools that we need.
     ctools_include('ajax');
     ctools_include('modal');
