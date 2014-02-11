@@ -1,0 +1,48 @@
+/*
+ * @file
+ *  rooms-responsive-modal.css
+ */
+
+/* Override inline dom styles from modal.js */
+#modalContent {
+  overflow: hidden;
+  position: fixed !important;
+  top: 12% !important;
+  bottom: 12% !important;
+  right: 4% !important;
+  left: 4% !important;
+}
+div.ctools-modal-content {
+  width: 100% !important;
+  /* Limit max width to 1000px */
+  margin: 0 auto;
+  max-width: 1000px;
+}
+div.ctools-modal-content .modal-content {
+  width: 100% !important;
+}
+
+/* Custom styles and positioning for our rooms modal. */
+div.rooms-responsive-modal {
+  position: relative;
+  border: 1px solid #C0C0C0;
+  border-radius: 2px;
+}
+div.rooms-responsive-modal .responsive-modal-header {
+  background: #CCC;
+  border-bottom: 1px solid #c0c0c0;
+  padding: 1em;
+  box-sizing: border-box;
+}
+div.rooms-responsive-modal .responsive-modal-content {
+  padding: 1em 1em 1em;
+  box-sizing: border-box;
+}
+div.rooms-responsive-modal .responsive-modal-title {
+  color: #000;
+  font-size: 140%;
+  font-weight: normal;
+}
+div.rooms-responsive-modal .responsive-modal-header a.close {
+  margin-top: -5px;
+}

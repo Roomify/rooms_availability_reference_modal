@@ -19,6 +19,51 @@ function rooms_availability_reference_modal_menu() {
   return $items;
 }
 
+function rooms_availability_reference_modal_preprocess_html(&$variables) {
+  drupal_add_js(array(
+    'rooms-responsive' => array(
+      'modalSize' => array(
+        'type' => 'scale',
+        'width' => .8,
+        'height' => .8,
+        'addWidth' => 0,
+        'addHeight' => 0,
+        'contentRight' => 25,
+        'contentBottom' => 75,
+      ),
+      'modalOptions' => array(
+        'opacity' => 0.2,
+        'background' => '#001438'
+      ),
+      'animation' => 'fadeIn',
+      'modalTheme' => 'ResponsiveModal',
+      'throbberTheme' => 'ResponsiveModalThrobber',
+      'throbber' => theme('image', array(
+        'path' => drupal_get_path('module', 'rooms_availability_reference_modal') . '/rooms-responsive-modal-throbber.gif',
+        'title' => t('Loading'),
+        'alt' => t('Loading...'),
+        'attributes' => array('class' => array('rooms-responsive-modal-throbber')),
+      )),
+      'closeImage' => theme('image', array(
+        'path' => drupal_get_path('module', 'rooms_availability_reference_modal') . '/rooms-responsive-modal-close-icon.png',
+        'title' => t('Close window'),
+        'alt' => t('Close window'),
+        'attributes' => array('class' => array('rooms-responsive-modal-close')),
+      )),
+    ),
+  ), 'setting');
+  drupal_add_js(drupal_get_path('module', 'rooms_availability_reference_modal') . '/rooms-responsive-modal.js');
+
+  // Override ctools modal.css
+  $css = drupal_add_css();
+  foreach($css as $key => $value) {
+    if (strpos($key, 'ctools/css/modal.css') !== FALSE) {
+      drupal_add_css(drupal_get_path('module', 'rooms_availability_reference_modal') . '/rooms-responsive-modal.css');
+    }
+  }
+}
+
+
 /**
  * Implements hook_field_formatter_info().
  */
@@ -63,7 +108,7 @@ function rooms_availability_reference_modal_field_formatter_view($entity_type, $
     $alt = t('View this unitʼs availability calendar');
     $result[] = array(
       '#type' => 'markup',
-      '#markup' => ctools_modal_text_button($name, $href, $alt),
+      '#markup' => ctools_modal_text_button($name, $href, $alt, 'ctools-modal-rooms-responsive'),
     );
   }
   return $result;
