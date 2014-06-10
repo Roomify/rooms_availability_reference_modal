@@ -184,7 +184,7 @@ function rooms_availability_reference_modal_form($js = NULL, $unit_ids = NULL) {
   }
 
   // Build the availability calendar from the specified unit ids
-  drupal_add_library('rooms_availability', 'rooms_fullcalendar');
+  rooms_fullcalendar_loaded();
   drupal_add_js(drupal_get_path('module', 'rooms_availability_reference') . '/js/rooms_availability_reference.js');
 
   $unit_names = array();
