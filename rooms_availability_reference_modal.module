@@ -63,6 +63,67 @@ function rooms_availability_reference_modal_preprocess_html(&$variables) {
   }
 }
 
+/**
+ * Implements hook_theme().
+ */
+function rooms_availability_reference_modal_theme($existing, $type, $theme, $path) {
+  return array(
+    'availability_calendar_popup_button' => array(
+      'render element' => 'element',
+      'variables' => array(
+        'name' => NULL,
+        'alt' => NULL,
+        'unit_ids' => NULL,
+      ),
+    ),
+  );
+}
+
+/**
+ * Process variables for theme_availability_calendar_popup_button().
+ */
+function rooms_availability_reference_modal_preprocess_availability_calendar_popup_button(&$variables) {
+
+  // Create the path from the Unit IDs provided.
+  if (!empty($variables['unit_ids'])) {
+    if (is_array($variables['unit_ids'])) {
+      $variables['path'] = 'availability/nojs/' . implode('+', $variables['unit_ids']);
+    }
+    else {
+      $variables['path'] = 'availability/nojs/' . $variables['unit_ids'];
+    }
+  }
+
+  // Provide the default link and hover text, if none provided.
+  if (!isset($variables['name'])) {
+    $variables['name'] = t('Check Availaibility');
+  }
+  if (!isset($variables['alt'])) {
+    $variables['alt'] = t('View this unitʼs availability calendar');
+  }
+}
+
+/**
+ * Default theme implementation for the availability calendar popup button.
+ * @param  name - the link text.
+ * @param  alt - the hover text (also known as HTML title attribute).
+ * @param  unit_ids - a list or array of rooms unit ids to use for
+ *         the availability calendar.
+ * @param  path - the path to the availability calendar, derived from unit_ids.
+ * @return the popup button rendered as HTML
+ */
+function theme_availability_calendar_popup_button($variables) {
+  return ctools_modal_text_button($variables['name'], $variables['path'], $variables['alt'], 'ctools-modal-rooms-responsive');
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function rooms_availability_reference_modal_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
+  }
+}
 
 /**
  * Implements hook_field_formatter_info().
@@ -86,7 +147,6 @@ function rooms_availability_reference_modal_field_formatter_info() {
  */
 function rooms_availability_reference_modal_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
 
-
   $result = array();
 
   if ($display['type'] == 'rooms_availability_reference_modal' && !empty($items)) {
@@ -103,12 +163,9 @@ function rooms_availability_reference_modal_field_formatter_view($entity_type, $
       $unit_ids[] = $unit->unit_id;
     }
 
-    $name = t('Check Availaibility');
-    $href = 'availability/nojs/' . implode('+', $unit_ids);
-    $alt = t('View this unitʼs availability calendar');
     $result[] = array(
-      '#type' => 'markup',
-      '#markup' => ctools_modal_text_button($name, $href, $alt, 'ctools-modal-rooms-responsive'),
+      '#theme' => 'availability_calendar_popup_button',
+      '#unit_ids' => $unit_ids,
     );
   }
   return $result;
