@@ -1,0 +1,39 @@
+
+
+.rooms-three-month-calendar .fc-view-month td:hover {
+  background: yellow;
+}
+
+.rooms-modal-booking-form fieldset.form-wrapper {
+  margin: 0;
+  padding: 0;
+  border: none;
+
+}
+
+.rooms-modal-booking-form .fieldset-description {
+  margin-bottom: 20px;
+}
+
+.rooms-modal-booking-form .form-item-group-size,
+.rooms-modal-booking-form .rooms-date-range,
+.rooms-modal-booking-form .form-actions {
+  float: left;
+  margin-right: 20px;
+}
+
+.rooms-modal-booking-form .form-actions {
+  margin-top: 1.2em;
+  margin-bottom: 0;
+}
+
+/* Override ctools modal form-item label width */
+div.ctools-modal-content .rooms-modal-booking-form .form-item label {
+  width: auto;
+  float: none;
+}
+
+/* Ensure Datepickers that show up inside modal content can be seen. */
+#ui-datepicker-div {
+  z-index: 1005 !important;
+}

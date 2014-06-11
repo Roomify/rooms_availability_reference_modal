@@ -11,7 +11,7 @@
 function rooms_availability_reference_modal_menu() {
   $items['availability/%ctools_js/%'] = array(
       'title' => 'Availability',
-      'page arguments' => array(1, 2),
+      'page arguments' => array(1, 2, 3, 4),
       'page callback' => 'rooms_availability_reference_modal_form',
       'access callback' => TRUE,
       'type' => MENU_NORMAL_ITEM,
@@ -171,7 +171,7 @@ function rooms_availability_reference_modal_field_formatter_view($entity_type, $
   return $result;
 }
 
-function rooms_availability_reference_modal_form($js = NULL, $unit_ids = NULL) {
+function rooms_availability_reference_modal_form($js = NULL, $unit_ids = NULL, $year = '', $month = '') {
   if ($unit_ids == NULL) {
     // You can customize the string below, or use a drupal_goto() to
     // send the user to a custom error page.
@@ -209,9 +209,12 @@ function rooms_availability_reference_modal_form($js = NULL, $unit_ids = NULL) {
   );
 
   $element[] = array(
-    '#theme' => 'rooms_availability_field_calendar',
-    '#attributes' => array('class' => 'cal'),
-    'calendar' => $result,
+    '#theme' => 'rooms_three_month_calendar',
+    '#url' => 'availability/nojs/' . $unit_ids,
+    '#form' => drupal_get_form('rooms_modal_booking_form', explode('+', $unit_ids), $year, $month, $js),
+    '#year' => $year,
+    '#month' => $month,
+    '#link_options' => !empty($js) ? array('attributes' => array('class' => array('ctools-use-modal ctools-modal-rooms-responsive'))) : NULL,
   );
 
   $title = t('Check Availability');
@@ -220,5 +223,102 @@ function rooms_availability_reference_modal_form($js = NULL, $unit_ids = NULL) {
   }
   else {
     return $element;
+  }
+}
+
+/**
+ * The modal-enabled form lets users see availability and book a date range.
+ */
+function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, $js=FALSE) {
+
+  $form['#attributes']['class'][] = 'rooms-modal-booking-form';
+
+  $form['unit_booking'] = array(
+    '#type' => 'fieldset',
+    '#description' => t('Select your desired travel dates to continue with your reservation.'),
+  );
+
+  $form['unit_booking']['is_js'] = array(
+    '#type' => 'hidden',
+    '#value' => $js,
+  );
+
+  $form['unit_booking']['unit_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $unit_id,
+  );
+
+  $form['unit_booking']['rooms_date_range'] = rooms_date_range_fields();
+
+  $form['unit_booking']['group_size'] = array(
+    '#title' => t('Group size'),
+    '#type' => 'select',
+    '#options' => rooms_assoc_range(1, 8),
+    '#default_value' => '2',
+  );
+
+  // Unset a js setting
+  drupal_add_js(array('rooms' => array('roomsBookingStartDay' => 0)), 'setting');
+
+  // We add the form's #submit array to this button along with the actual submit
+  // handler to preserve any submit handlers added by a form callback_wrapper.
+  $submit = array();
+
+  if (!empty($form['unit_booking']['#submit'])) {
+    $submit += $form['unit_booking']['#submit'];
+  }
+
+  $form['unit_booking']['actions'] = array(
+    '#type' => 'actions',
+    '#tree' => false,
+  );
+
+  $form['unit_booking']['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Book this'),
+    '#submit' => $submit + array('rooms_modal_booking_form_submit'),
+  );
+
+  // We append the validate handler to #validate in case a form callback_wrapper
+  // is used to add validate handlers earlier.
+  $form['#validate'][] = 'rooms_form_start_end_dates_validate';
+  //@todo validate with 'rooms_booking_availability_search_form_validate()';
+
+  $form['#attached']['css'][] = drupal_get_path('module', 'rooms_availability_reference_modal') . '/css/rooms_modal_booking.css';
+  $form['#attached']['js'][] = drupal_get_path('module', 'rooms_availability_reference_modal') . '/js/rooms_modal_booking.js';
+  $form['#attached']['js'][] = array(
+    'data' => array('roomsAvailability' => array('roomID' => $unit_id)),
+    'type' =>'setting',
+  );
+
+  return $form;
+}
+
+/**
+ * Submit handler for the rooms_modal_booking_form().
+ */
+function rooms_modal_booking_form_submit(&$form, &$form_state) {
+  //list($start_date, $end_date) = rooms_form_input_get_start_end_dates($form_state);
+  $start_date = new DateTime($form_state['values']['rooms_start_date']);
+  $end_date = new DateTime($form_state['values']['rooms_end_date']);
+
+  $start_date = $start_date->format('Y-m-d');
+  $end_date = $end_date->format('Y-m-d');
+
+  $unit_id = implode('+', $form_state['values']['unit_id']);
+
+  $query_string = array();
+  if (!empty($form_state['values']['group_size'])) {
+    $query_string['rooms_group_size1'] = $form_state['values']['group_size'];
+  }
+
+  $url = "booking/$start_date/$end_date/$unit_id";
+  $options = array('query' => $query_string);
+  // @todo the redirect is currently broken in the modal.
+  if (!empty($form_state['values']['is_js'])) {
+    ctools_ajax_command_redirect($url, 0, $options);
+  }
+  else {
+    $form_state['redirect'] = array($url, $options);
   }
 }
