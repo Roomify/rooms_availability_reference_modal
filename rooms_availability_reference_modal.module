@@ -238,11 +238,6 @@ function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, 
     '#description' => t('Select your desired travel dates to continue with your reservation.'),
   );
 
-  $form['unit_booking']['is_js'] = array(
-    '#type' => 'hidden',
-    '#value' => $js,
-  );
-
   $form['unit_booking']['unit_id'] = array(
     '#type' => 'hidden',
     '#value' => $unit_id,
@@ -277,6 +272,7 @@ function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, 
     '#type' => 'submit',
     '#value' => t('Book this'),
     '#submit' => $submit + array('rooms_modal_booking_form_submit'),
+    '#ajax' => array('callback' => 'rooms_modal_booking_form_ajax_submit'),
   );
 
   // We append the validate handler to #validate in case a form callback_wrapper
@@ -298,10 +294,33 @@ function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, 
  * Submit handler for the rooms_modal_booking_form().
  */
 function rooms_modal_booking_form_submit(&$form, &$form_state) {
-  //list($start_date, $end_date) = rooms_form_input_get_start_end_dates($form_state);
+  list($url, $options) = _rooms_modal_booking_form_get_redirect_url($form_state);
+  $form_state['redirect'] = array($url, $options);
+}
+
+/**
+ * AJAX Submit handler for the rooms_modal_booking_form().
+ */
+function rooms_modal_booking_form_ajax_submit(&$form, &$form_state) {
+  list($url, $options) = _rooms_modal_booking_form_get_redirect_url($form_state);
+  ctools_include('ajax');
+  ctools_add_js('ajax-responder');
+  $commands[] = ctools_ajax_command_redirect($url, 0, $options);
+  $page = array('#type' => 'ajax', '#commands' => $commands);
+  $commands = ajax_prepare_response($page);
+  print ajax_render($commands);
+  drupal_exit();
+}
+
+/**
+ * Helper function converts variables from form into a URL for redirect.
+ */
+function _rooms_modal_booking_form_get_redirect_url(&$form_state) {
+  // Create date objects.
   $start_date = new DateTime($form_state['values']['rooms_start_date']);
   $end_date = new DateTime($form_state['values']['rooms_end_date']);
 
+  // Convert dates to the required URL format.
   $start_date = $start_date->format('Y-m-d');
   $end_date = $end_date->format('Y-m-d');
 
@@ -314,11 +333,5 @@ function rooms_modal_booking_form_submit(&$form, &$form_state) {
 
   $url = "booking/$start_date/$end_date/$unit_id";
   $options = array('query' => $query_string);
-  // @todo the redirect is currently broken in the modal.
-  if (!empty($form_state['values']['is_js'])) {
-    ctools_ajax_command_redirect($url, 0, $options);
-  }
-  else {
-    $form_state['redirect'] = array($url, $options);
-  }
+  return array($url, $options);
 }
