@@ -230,6 +230,9 @@ function rooms_availability_reference_modal_form($js = NULL, $unit_ids = NULL, $
  * The modal-enabled form lets users see availability and book a date range.
  */
 function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, $js=FALSE) {
+  // Pass variables to $form_state to be available for other modules.
+  $form_state['year'] = $year;
+  $form_state['month'] = $month;
 
   $form['#attributes']['class'][] = 'rooms-modal-booking-form';
 
