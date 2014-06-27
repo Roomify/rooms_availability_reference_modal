@@ -251,7 +251,7 @@ function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, 
   $form['unit_booking']['group_size'] = array(
     '#title' => t('Group size'),
     '#type' => 'select',
-    '#options' => rooms_assoc_range(1, 8),
+    '#options' => rooms_assoc_range(1, variable_get('rooms_booking_manager_search_form_max_group_size', 8)),
     '#default_value' => '2',
   );
 
