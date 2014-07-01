@@ -12,7 +12,7 @@ function rooms_availability_reference_modal_menu() {
   $items['availability/%ctools_js/%'] = array(
       'title' => 'Availability',
       'page arguments' => array(1, 2, 3, 4),
-      'page callback' => 'rooms_availability_reference_modal_form',
+      'page callback' => 'rooms_availability_reference_modal_page',
       'access callback' => TRUE,
       'type' => MENU_NORMAL_ITEM,
   );
@@ -171,7 +171,7 @@ function rooms_availability_reference_modal_field_formatter_view($entity_type, $
   return $result;
 }
 
-function rooms_availability_reference_modal_form($js = NULL, $unit_ids = NULL, $year = '', $month = '') {
+function rooms_availability_reference_modal_page($js = NULL, $unit_ids = NULL, $year = '', $month = '') {
   if ($unit_ids == NULL) {
     // You can customize the string below, or use a drupal_goto() to
     // send the user to a custom error page.
