@@ -56,6 +56,7 @@ Drupal.behaviors.rooms_modal_booking = {
         firstDay: firstDay,
         month: value[1],
         year: value[2],
+        height: 1,
         header:{
           left: 'title',
           center: '',
