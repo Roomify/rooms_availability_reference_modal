@@ -3,12 +3,18 @@
 Drupal.behaviors.rooms_modal_booking = {
   attach: function(context) {
 
-    // $('.rooms-modal-booking-form .start-date').hide();
-    // $('.rooms-modal-booking-form .end-date').hide();
-    // $('.rooms-modal-booking-form .form-submit').atrr('disabled', 'disabled');
+    $('.rooms-modal-booking-form .start-date').hide();
+    $('.rooms-modal-booking-form .end-date').hide();
+    $('.rooms-modal-booking-form .form-submit').attr('disabled', 'disabled');
 
+    $('.rooms-modal-booking-form .rooms-date-range input').bind('keyup change', function () {
+      $form = $(this).closest("form");
+      if ($('.end-date input', $form).val() && $('.start-date input', $form).val()) {
+        $('.rooms-modal-booking-form .form-submit').removeAttr('disabled').focus();
+      }
+    });
 
-    // Current month is whatever comes through -1 since js counts months starting from 0
+    // Convert php current month to js (which counts months starting from 0).
     currentMonth = Drupal.settings.roomsCalendar.currentMonth - 1;
     currentYear = Drupal.settings.roomsCalendar.currentYear;
     firstDay = Drupal.settings.roomsCalendar.firstDay;
@@ -83,7 +89,7 @@ Drupal.behaviors.rooms_modal_booking = {
           $('.rooms-modal-booking-form .end-date input').val(ed);
           $('.rooms-modal-booking-form .end-date input').datepicker('setDate', end);
 
-          //$('.rooms-modal-booking-form .form-submit').removeAttr('disabled');
+          $('.rooms-modal-booking-form .form-submit').removeAttr('disabled').focus();
         }
       });
     });
