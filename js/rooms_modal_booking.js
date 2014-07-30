@@ -3,8 +3,8 @@
 Drupal.behaviors.rooms_modal_booking = {
   attach: function(context) {
 
-    $('.rooms-modal-booking-form .start-date').hide();
-    $('.rooms-modal-booking-form .end-date').hide();
+    //$('.rooms-modal-booking-form .start-date').hide();
+    //$('.rooms-modal-booking-form .end-date').hide();
     $('.rooms-modal-booking-form .form-submit').attr('disabled', 'disabled');
 
     $('.rooms-modal-booking-form .rooms-date-range input').bind('keyup change', function () {
