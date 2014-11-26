@@ -238,7 +238,7 @@ function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, 
 
   $form['unit_booking'] = array(
     '#type' => 'fieldset',
-    '#description' => t('Select your desired travel dates to continue with your reservation.'),
+    '#description' => variable_get_value('rooms_availability_reference_modal_select_dates'),
   );
 
   $form['unit_booking']['unit_id'] = array(
@@ -249,7 +249,7 @@ function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, 
   $form['unit_booking']['rooms_date_range'] = rooms_date_range_fields();
 
   $form['unit_booking']['group_size'] = array(
-    '#title' => t('Group size'),
+    '#title' => variable_get_value('rooms_booking_manager_group_size'),
     '#type' => 'select',
     '#options' => rooms_assoc_range(1, variable_get('rooms_booking_manager_search_form_max_group_size', 8)),
     '#default_value' => '2',
@@ -273,7 +273,7 @@ function rooms_modal_booking_form($form, &$form_state, $unit_id, $year, $month, 
 
   $form['unit_booking']['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Book this'),
+    '#value' => variable_get_value('rooms_availability_reference_modal_book_this'),
     '#submit' => $submit + array('rooms_modal_booking_form_submit'),
     '#ajax' => array('callback' => 'rooms_modal_booking_form_ajax_submit'),
   );

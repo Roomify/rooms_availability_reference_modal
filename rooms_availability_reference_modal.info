@@ -4,3 +4,5 @@ core = 7.x
 package = Roomify
 version = 7.x-1.0
 project = rooms_availablility_reference_modal
+
+dependencies[] = rooms_booking_manager
