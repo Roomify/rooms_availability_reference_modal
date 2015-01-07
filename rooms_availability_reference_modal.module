@@ -334,7 +334,27 @@ function _rooms_modal_booking_form_get_redirect_url(&$form_state) {
     $query_string['rooms_group_size1'] = $form_state['values']['group_size'];
   }
 
+  $query_string['rooms_id'] = $form_state['values']['unit_id'][0];
   $url = "booking/$start_date/$end_date/$unit_id";
   $options = array('query' => $query_string);
   return array($url, $options);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * FORM_ID = rooms_booking_manager_change_search_form
+ */
+function rooms_availability_reference_modal_form_rooms_booking_manager_change_search_form_alter(&$form, &$form_state, &$form_id) {
+  $key = array_search('rooms_booking_manager_change_search_form_submit', $form['#submit']);
+  array_splice($form['#submit'], $key, 1, 'rooms_availability_modal_change_search_form_submit');
+}
+
+function rooms_availability_modal_change_search_form_submit($form, &$form_state) {
+  if (isset($_GET['rooms_id'])) {
+    $form_state['redirect'] = 'availability/nojs/' . $form_state['values']['rooms_id'];
+  }
+  else {
+    rooms_booking_manager_change_search_form_submit($form, $form_state);
+  }
 }
