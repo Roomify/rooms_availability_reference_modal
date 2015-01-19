@@ -60,8 +60,7 @@ Drupal.behaviors.rooms_modal_booking = {
         dayNamesShort: [Drupal.t("Sun"), Drupal.t("Mon"), Drupal.t("Tue"), Drupal.t("Wed"), Drupal.t("Thu"), Drupal.t("Fri"), Drupal.t("Sat")],
         monthNames: [Drupal.t("January"), Drupal.t("February"), Drupal.t("March"), Drupal.t("April"), Drupal.t("May"), Drupal.t("June"), Drupal.t("July"), Drupal.t("August"), Drupal.t("September"), Drupal.t("October"), Drupal.t("November"), Drupal.t("December")],
         firstDay: firstDay,
-        month: value[1],
-        year: value[2],
+        defaultDate: moment([value[2],phpmonth-1]),
         height: 1,
         header:{
           left: 'title',
@@ -71,8 +70,8 @@ Drupal.behaviors.rooms_modal_booking = {
         events: Drupal.settings.basePath + '?q=rooms/units/unit/' + Drupal.settings.roomsAvailability.roomID + '/availability/json/' + value[2] + '/' + phpmonth,
 
         select: function(start, end, allDay) {
-          var sd = $.datepicker.formatDate('dd/mm/yy', start);
-          var ed = $.datepicker.formatDate('dd/mm/yy', end);
+          var sd = start.format('DD/MM/YYYY');
+          var ed = end.format('DD/MM/YYYY');
 
           console.log(sd);
           console.log(ed);
@@ -90,6 +89,10 @@ Drupal.behaviors.rooms_modal_booking = {
           $('.rooms-modal-booking-form .end-date input').datepicker('setDate', end);
 
           $('.rooms-modal-booking-form .form-submit').removeAttr('disabled').focus();
+        },
+        //Remove Time from events.
+        eventRender: function(event, el) {
+          el.find('.fc-time').remove();
         }
       });
     });
