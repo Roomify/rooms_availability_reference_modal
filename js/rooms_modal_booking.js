@@ -96,6 +96,19 @@ Drupal.behaviors.rooms_modal_booking = {
         }
       });
     });
+
+    // Highligth cells on hover
+    $('.fc-day-number').hover(
+      function() {
+        $(this).addClass('is-hovered');
+        var day_cell = $(this).closest('.fc-day-grid-container').find(".fc-bg td[data-date='" + $(this).data('date') + "']");
+        $(day_cell).addClass('is-hovered');
+      }, function() {
+        $(this).removeClass('is-hovered');
+        var day_cell = $(this).closest('.fc-day-grid-container').find(".fc-bg td[data-date='" + $(this).data('date') + "']");
+        $(day_cell).removeClass('is-hovered');
+      }
+    );
   }
 };
 

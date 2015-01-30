@@ -1,7 +1,7 @@
 
-
-.rooms-three-month-calendar .fc-view-month td:hover {
-  background: yellow;
+.rooms-three-month-calendar .fc-day.is-hovered,
+.rooms-three-month-calendar .fc-bg td:hover {
+  background-color: yellow;
 }
 
 .rooms-modal-booking-form fieldset.form-wrapper {
