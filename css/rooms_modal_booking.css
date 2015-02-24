@@ -37,3 +37,12 @@ div.ctools-modal-content .rooms-modal-booking-form .form-item label {
 #ui-datepicker-div {
   z-index: 1005 !important;
 }
+
+/* Reduce triangles of the events on the modal to be clearer. */
+.rooms-three-month-calendar .fc-content-skeleton .fc-event-container .event-start,
+.rooms-three-month-calendar .fc-content-skeleton .fc-event-container .event-end {
+  border-width: 10px !important;
+}
+.rooms-three-month-calendar .fc-content-skeleton .fc-event-container .event-start {
+  bottom: -10px !important;
+}
