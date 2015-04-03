@@ -96,7 +96,7 @@ function rooms_availability_reference_modal_preprocess_availability_calendar_pop
 
   // Provide the default link and hover text, if none provided.
   if (!isset($variables['name'])) {
-    $variables['name'] = t('Check Availaibility');
+    $variables['name'] = t('Check Availability');
   }
   if (!isset($variables['alt'])) {
     $variables['alt'] = t('View this unitʼs availability calendar');
